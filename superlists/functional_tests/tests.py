@@ -12,19 +12,24 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 import time
-import os
-
+import sys
 
 MAX_WAIT = 10
 
 
 class NewVisitorTest(StaticLiveServerTestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        for arg in sys.argv:
+            if 'liveserver' in arg:
+                cls.server_url = 'http://' + arg.split('=')[1]
+                return
+        super().setUpClass()
+        cls.server_url = cls.live_server_url
+
     def setUp(self):
         self.browser = webdriver.Chrome()
-        staging_server = os.environ.get('STAGING')
-        if staging_server:
-            self.live_server_url = 'http://' + staging_server
 
     def tearDown(self):
         self.browser.quit()
@@ -104,3 +109,4 @@ class NewVisitorTest(StaticLiveServerTestCase):
             512,
             delta=10
         )
+
