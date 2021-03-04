@@ -23,6 +23,8 @@ class ItemForm(forms.models.ModelForm):
             'text': forms.fields.TextInput(attrs={
                 'placeholder': 'Enter a to-do item',
                 'class': 'form-control input-lg',
+                'name': 'item_text',
+                'id': 'id_new_item'
             }),
         }
         error_messages = {

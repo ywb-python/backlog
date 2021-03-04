@@ -55,6 +55,12 @@ class NewListTest(TestCase):
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(Item.objects.count(), 0)
 
+    def test_validation_errors_are_sent_back_to_home_page_template(self):
+        response = self.client.post('/lists/new', data={'text': ''})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
+        self.assertContains(response, escape(EMPTY_ITEM_ERROR))
+
 
 class ListViewTest(TestCase):
 
@@ -131,5 +137,15 @@ class ListViewTest(TestCase):
 
     def test_for_invalid_input_shows_error_on_page(self):
         response = self.post_invalid_input()
+        self.assertContains(response, escape(EMPTY_ITEM_ERROR))
+
+    def test_validation_errors_end_up_on_lists_page(self):
+        list_ = List.objects.create()
+        response = self.client.post(
+            '/lists/%d/' % (list_.id,),
+            data={'text': ''}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
         self.assertContains(response, escape(EMPTY_ITEM_ERROR))
 
