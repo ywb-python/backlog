@@ -123,6 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
 EMAIL_HOST = 'smtp.163.com'
 EMAIL_HOST_USER = '18721706546@163.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
@@ -147,3 +148,23 @@ EMAIL_USE_TLS = True
 #     # },
 #     'root': {'level', 'INFO'},
 # }
+
+STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '../static'))
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+        },
+    },
+    'root': {'level': 'INFO'},
+}
+
