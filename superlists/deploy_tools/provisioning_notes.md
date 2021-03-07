@@ -4,33 +4,44 @@ Provisioning a new site
 ## Required packages:
 
 * nginx
-* Python 3
+* Python 3.6
+* virtualenv + pip
 * Git
-* pip
-* virtualenv
 
 eg, on Ubuntu:
 
-    sudo apt-get install nginx git python3 python3-pip
-    sudo pip3 install virtualenv
+    sudo add-apt-repository ppa:deadsnakes/ppa
+    sudo apt update
+    sudo apt install nginx git python36 python3.6-venv
 
 ## Nginx Virtual Host config
 
 * see nginx.template.conf
-* replace SITENAME with, eg, staging.my-domain.com
+* replace DOMAIN with, e.g., staging.my-domain.com
 
-## Upstart Job
+## Systemd service
 
-* see gunicorn-upstart.template.conf
-* replace SITENAME with, eg, staging.my-domain.com
+* see gunicorn-systemd.template.service
+* replace DOMAIN with, e.g., staging.my-domain.com
+* replace SEKRIT with email password
+* Use this snippet to generate a unique secret key:
+
+python -c"import random; print(''.join(random.SystemRandom().
+choices('abcdefghijklmnopqrstuvwxyz0123456789%^*(-_=+)', k=50)))"
+
 
 ## Folder structure:
+
 Assume we have a user account at /home/username
 
 /home/username
 └── sites
-    └── SITENAME
-         ├── database
-         ├── source
-         ├── static
-         └── virtualenv
+    ├── DOMAIN1
+    │    ├── db.sqlite3
+    │    ├── manage.py etc
+    │    ├── static
+    │    └── virtualenv
+    └── DOMAIN2
+         ├── db.sqlite3
+         ├── manage.py etc
+
