@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/2/28 16:56
 # @Author  : ywb
-# @Site    : 
+# @Site    :
 # @File    : test_layout_and_styling.py
 # @Software: PyCharm
 
@@ -33,6 +33,6 @@ class LayoutAndStylingTest(FunctionalTest):
         self.assertAlmostEqual(
             inputbox.location['x'] + inputbox.size['width'] / 2,
             512,
-            delta=10
+            delta=15
         )
 
