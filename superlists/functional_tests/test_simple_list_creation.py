@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/2/28 16:55
 # @Author  : ywb
-# @Site    : 
+# @Site    :
 # @File    : test_simple_list_creation.py
 # @Software: PyCharm
 
@@ -51,7 +51,6 @@ class NewVisitorTest(FunctionalTest):
 
         # Satisfied, she goes back to sleep
 
-
     def test_multiple_users_can_start_lists_at_different_urls(self):
         # Edith starts a new to-do list
         self.browser.get(self.live_server_url)
@@ -66,7 +65,7 @@ class NewVisitorTest(FunctionalTest):
         ## We use a new browser session to make sure that no information
         ## of Edith's is coming through from cookies etc
         self.browser.quit()
-        self.browser = webdriver.Firefox()
+        self.browser = webdriver.Chrome()
 
         # Francis visits the home page.  There is no sign of Edith's
         # list

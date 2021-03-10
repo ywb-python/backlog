@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/2/28 16:56
 # @Author  : ywb
-# @Site    : 
+# @Site    :
 # @File    : test_list_item_validation.py
 # @Software: PyCharm
 
