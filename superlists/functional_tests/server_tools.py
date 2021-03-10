@@ -17,4 +17,3 @@ def create_session_on_server(host, email):
     with settings(host_string=f'elspeth@{host}'):
         session_key = run(f'{manage_dot_py} create_session {email}')
         return session_key.strip()
-
