@@ -7,9 +7,11 @@
 # @Software: PyCharm
 
 
+
+from .base import FunctionalTest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from .base import FunctionalTest
+
 
 
 class NewVisitorTest(FunctionalTest):
@@ -17,7 +19,7 @@ class NewVisitorTest(FunctionalTest):
     def test_can_start_a_list_for_one_user(self):
         # Edith has heard about a cool new online to-do app. She goes
         # to check out its homepage
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
 
         # She notices the page title and header mention to-do lists
         self.assertIn('To-Do', self.browser.title)
@@ -51,9 +53,10 @@ class NewVisitorTest(FunctionalTest):
 
         # Satisfied, she goes back to sleep
 
+
     def test_multiple_users_can_start_lists_at_different_urls(self):
-        # Edith starts a new to-do list
-        self.browser.get(self.live_server_url)
+        # Edith start a new todo list
+        self.browser.get(self.server_url)
         self.add_list_item('Buy peacock feathers')
 
         # She notices that her list has a unique URL
@@ -69,7 +72,7 @@ class NewVisitorTest(FunctionalTest):
 
         # Francis visits the home page.  There is no sign of Edith's
         # list
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy peacock feathers', page_text)
         self.assertNotIn('make a fly', page_text)
@@ -82,6 +85,11 @@ class NewVisitorTest(FunctionalTest):
         francis_list_url = self.browser.current_url
         self.assertRegex(francis_list_url, '/lists/.+')
         self.assertNotEqual(francis_list_url, edith_list_url)
+
+        # Again, there is no trace of Edith's list
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy peacock feathers', page_text)
         self.assertIn('Buy milk', page_text)
+
+        # Satisfied, they both go back to sleep
+
