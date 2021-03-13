@@ -201,7 +201,6 @@ class ListViewTest(TestCase):
         response = self.post_invalid_input()
         self.assertContains(response, escape(EMPTY_ITEM_ERROR))
 
-
     def test_duplicate_item_validation_errors_end_up_on_lists_page(self):
         list1 = List.objects.create()
         item1 = Item.objects.create(list=list1, text='textey')
@@ -230,27 +229,4 @@ class MyListsTest(TestCase):
         correct_user = User.objects.create(email='a@b.com')
         response = self.client.get('/lists/users/a@b.com/')
         self.assertEqual(response.context['owner'], correct_user)
-
-
-
-class ShareListTest(TestCase):
-
-    def test_sharing_a_list_via_post(self):
-        sharee = User.objects.create(email='share.with@me.com')
-        list_ = List.objects.create()
-        self.client.post(
-            '/lists/%d/share' % (list_.id),
-            {'sharee': 'share.with@me.com'}
-        )
-        self.assertIn(sharee, list_.shared_with.all())
-
-
-    def test_redirects_after_POST(self):
-        sharee = User.objects.create(email='share.with@me.com')
-        list_ = List.objects.create()
-        response = self.client.post(
-            '/lists/%d/share' % (list_.id),
-            {'sharee': 'share.with@me.com'}
-        )
-        self.assertRedirects(response, list_.get_absolute_url())
 
