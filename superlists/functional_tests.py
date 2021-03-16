@@ -22,6 +22,9 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.quit()
 
     def test_can_start_a_list_and_retrieve_it_later(self):
+        """
+        用户输入一个待办事项提交成功后并且可以正确显示提交的内容
+        """
         self.browser.get('http://localhost:8000')
         self.assertIn('To-Do', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
