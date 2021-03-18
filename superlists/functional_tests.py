@@ -8,6 +8,7 @@
 
 
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 import time
 import unittest
@@ -22,13 +23,17 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.quit()
 
     def check_for_row_in_list_table(self, row_text):
+        """
+        检查页面是否存在文本
+        :param row_text: 待检测文本
+        """
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
 
     def test_can_start_a_list_and_retrieve_it_later(self):
         """
-        用户输入一个待办事项提交成功后并且可以正确显示提交的内容
+        用户输入多个个待办事项提交成功后并且可以正确显示提交的内容
         """
         self.browser.get('http://localhost:8000')
         self.assertIn('To-Do', self.browser.title)
