@@ -26,6 +26,10 @@ class NewVisitorTest(LiveServerTestCase):
         self.browser.quit()
 
     def wait_for_row_in_list_table(self, row_text):
+        """
+        循环等待，以便检查页面是否存在文本
+        :param row_text: 待检测文本
+        """
         start_time = time.time()
         while True:
             try:
@@ -39,6 +43,9 @@ class NewVisitorTest(LiveServerTestCase):
                 time.sleep(0.5)
 
     def test_can_start_a_list_and_retrieve_it_later(self):
+        """
+        用户输入多个个待办事项提交成功后并且可以正确显示提交的内容
+        """
         self.browser.get(self.live_server_url)
         self.assertIn('To-Do', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
