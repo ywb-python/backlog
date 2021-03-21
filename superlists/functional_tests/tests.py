@@ -26,6 +26,10 @@ class NewVisitorTest(LiveServerTestCase):
         self.browser.quit()
 
     def wait_for_row_in_list_table(self, row_text):
+        """
+        循环等待检测页面是否出现待检测文本
+        :param row_text: 待检测文本
+        """
         start_time = time.time()
         while True:
             try:
