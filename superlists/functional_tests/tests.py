@@ -62,7 +62,7 @@ class NewVisitorTest(LiveServerTestCase):
 
     def test_multiple_users_can_start_lists_at_different_urls(self):
         """
-        测试多用户提交的待办事项是独立分开的，不能看到别人提交的内容
+        测试多用户提交的待办事项是独立分开的，是否有自己唯一的url,不能看到别人提交的内容
         :return:
         """
         self.browser.get(self.live_server_url)
@@ -83,6 +83,7 @@ class NewVisitorTest(LiveServerTestCase):
         input_box.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Buy milk')
         francis_list_url = self.browser.current_url
+        # assertRegex():用于检查字符串是否匹配正则表达式
         self.assertRegex(francis_list_url, '/lists/.+')
         self.assertNotEqual(francis_list_url, edith_list_url)
         page_text = self.browser.find_element_by_tag_name('body').text
