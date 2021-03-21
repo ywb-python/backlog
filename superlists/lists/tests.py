@@ -3,8 +3,13 @@ from lists.models import Item, List
 
 
 class HomePageTest(TestCase):
-
+    """
+    视图函数home_page的单元测试
+    """
     def test_uses_home_template(self):
+        """
+        测试网站根路径("/")能否被正确解析，映射到对应的视图函数上
+        """
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
@@ -54,15 +59,16 @@ class ListViewTest(TestCase):
         response = self.client.get(f'/lists/{list_.id}/')
         self.assertTemplateUsed(response, 'list.html')
 
-
     def test_passes_correct_list_to_template(self):
         other_list = List.objects.create()
         correct_list = List.objects.create()
         response = self.client.get('/lists/%d/' % (correct_list.id,))
         self.assertEqual(response.context['list'], correct_list)
 
-
     def test_displays_only_items_for_that_list(self):
+        """
+        测试首页是否可以显示多个待办事项
+        """
         correct_list = List.objects.create()
         Item.objects.create(text='itemey 1', list=correct_list)
         Item.objects.create(text='itemey 2', list=correct_list)
@@ -74,7 +80,6 @@ class ListViewTest(TestCase):
         self.assertContains(response, 'itemey 2')
         self.assertNotContains(response, 'other list item 1')
         self.assertNotContains(response, 'other list item 2')
-
 
 
 class ListAndItemModelsTest(TestCase):

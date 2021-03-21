@@ -39,6 +39,9 @@ class NewVisitorTest(LiveServerTestCase):
             time.sleep(0.5)
 
     def test_can_start_a_list_for_one_user(self):
+        """
+        一个用户输入多个个待办事项提交成功后并且可以正确显示提交的内容
+        """
         self.browser.get(self.live_server_url)
         self.assertIn('To-Do', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
@@ -58,6 +61,10 @@ class NewVisitorTest(LiveServerTestCase):
         self.wait_for_row_in_list_table('1: Buy peacock feathers')
 
     def test_multiple_users_can_start_lists_at_different_urls(self):
+        """
+        测试多用户提交的待办事项是独立分开的，不能看到别人提交的内容
+        :return:
+        """
         self.browser.get(self.live_server_url)
         input_box = self.browser.find_element_by_id('id_new_item')
         input_box.send_keys('Buy peacock feathers')
