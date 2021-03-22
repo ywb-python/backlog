@@ -16,7 +16,7 @@ class HomePageTest(TestCase):
 
     def test_displays_all_list_items(self):
         """
-        测试首页是否可以显示多个待办事项
+        测试直接打开首页是否可以显示多个待办事项
         """
         Item.objects.create(text='itemey 1')
         Item.objects.create(text='itemey 2')
