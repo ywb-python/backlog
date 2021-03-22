@@ -33,7 +33,6 @@ def add_item(request, list_id):
     用于原有的用户新提交待办事项之后的页面重定向
     :param request:
     :param list_id: 待办事项列表id
-    :return:
     """
     list_ = List.objects.get(id=list_id)
     Item.objects.create(text=request.POST['item_text'], list=list_)
