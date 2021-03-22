@@ -2,6 +2,9 @@ from django.test import TestCase
 
 
 class HomePageTest(TestCase):
+    """
+    视图函数home_page()对应的单元测试用例
+    """
 
     def test_uses_home_template(self):
         """
