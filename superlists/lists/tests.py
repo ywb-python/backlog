@@ -16,7 +16,7 @@ class HomePageTest(TestCase):
 
     def test_displays_all_list_items(self):
         """
-        测试首页是否可以显示多个待办事项
+        测试直接打开首页是否可以显示多个待办事项
         """
         Item.objects.create(text='itemey 1')
         Item.objects.create(text='itemey 2')
@@ -56,7 +56,6 @@ class ItemModelTest(TestCase):
     def test_saving_and_retrieving_items(self):
         """
         测试多个Item对象是否可以保存成功并且在页面上正确显示
-        :return:
         """
         first_item = Item()
         first_item.text = 'The first (ever) list item'
