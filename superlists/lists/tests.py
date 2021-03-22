@@ -6,13 +6,11 @@ class HomePageTest(TestCase):
     """
     视图函数home_page的单元测试
     """
-
     def test_uses_home_template(self):
         """
         测试网站根路径("/")能否被正确解析，映射到对应的视图函数上
         """
         response = self.client.get('/')
-        # assertTemplateUsed():检查响应是使用哪个模板进行渲染的
         self.assertTemplateUsed(response, 'home.html')
 
 
@@ -115,7 +113,6 @@ class ListAndItemModelsTest(TestCase):
     """
     模型List和Item的单元测试
     """
-
     def test_saving_and_retrieving_items(self):
         """
         测试新建List对象名下的待办事项能否被正确保存并显示
