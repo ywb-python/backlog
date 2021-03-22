@@ -13,7 +13,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 import time
 
-
 MAX_WAIT = 10
 
 
@@ -26,6 +25,10 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.browser.quit()
 
     def wait_for_row_in_list_table(self, row_text):
+        """
+        循环等待检测页面是否出现待检测文本
+        :param row_text: 待检测文本
+        """
         start_time = time.time()
         while True:
             try:
@@ -39,6 +42,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
             time.sleep(0.5)
 
     def test_can_start_a_list_for_one_user(self):
+        """
+        测试一个用户输入多个待办事项提交成功后并且可以正确显示提交的内容
+        """
         self.browser.get(self.live_server_url)
         self.assertIn('To-Do', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
@@ -58,6 +64,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.wait_for_row_in_list_table('1: Buy peacock feathers')
 
     def test_multiple_users_can_start_lists_at_different_urls(self):
+        """
+        测试多用户提交的待办事项是独立分开的，是否有自己唯一的url,不能看到别人提交的内容
+        """
         self.browser.get(self.live_server_url)
         input_box = self.browser.find_element_by_id('id_new_item')
         input_box.send_keys('Buy peacock feathers')
@@ -76,6 +85,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         input_box.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Buy milk')
         francis_list_url = self.browser.current_url
+        # assertRegex():用于检查字符串是否匹配正则表达式
         self.assertRegex(francis_list_url, '/lists/.+')
         self.assertNotEqual(francis_list_url, edith_list_url)
         page_text = self.browser.find_element_by_tag_name('body').text
@@ -83,9 +93,13 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertIn('Buy milk', page_text)
 
     def test_layout_and_styling(self):
+        """
+        测试页面布局
+        """
         self.browser.get(self.live_server_url)
         self.browser.set_window_size(1024, 768)
         input_box = self.browser.find_element_by_id('id_new_item')
+        # assertAlmostEqual():帮助处理舍入误差以及偶尔由滚动条等事物导致的异常，这里制定计算结果在10像素范围内为可接受
         self.assertAlmostEqual(
             input_box.location['x'] + input_box.size['width'] / 2,
             512,
