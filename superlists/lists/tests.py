@@ -5,6 +5,9 @@ from lists.views import home_page
 
 
 class HomePageTest(TestCase):
+    """
+    视图函数home_page()对应的单元测试用例
+    """
 
     def test_root_url_resolves_to_home_page(self):
         """
