@@ -115,7 +115,7 @@ class ListAndItemModelsTest(TestCase):
     """
     def test_saving_and_retrieving_items(self):
         """
-        测试新建List对象名下的待办事项能否被正确爆粗并显示
+        测试新建List对象名下的待办事项能否被正确保存并显示
         """
         list_ = List()
         list_.save()
