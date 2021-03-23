@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    # 'django.contrib.admin',
+    #'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -65,7 +65,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
-        'builtins':['django.templatetags.static'],
     },
 ]
 
