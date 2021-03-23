@@ -8,6 +8,7 @@
 
 
 from django.test import LiveServerTestCase
+# LiveServerTestCase：django提供的一个用于功能测试的类
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
