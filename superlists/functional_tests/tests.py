@@ -8,6 +8,7 @@
 
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+# StaticLiveServerTestCase：在LiveServerTestCase类的基础上增加了静态文件的加载
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
