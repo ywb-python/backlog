@@ -11,6 +11,9 @@
             {% csrf_token %}
         </form>
         <table id="id_list_table">
+        <!-- 对象.item_set:反向查询-->
+        <!-- 正向查询：子表查询主表-->
+        <!--反向查询：主表查询子表-->
             {% for item in list.item_set.all %}
             <tr><td>{{forloop.counter }}: {{ item.text }}</td></tr>
             {% endfor %}

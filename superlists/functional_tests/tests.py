@@ -76,6 +76,7 @@ class NewVisitorTest(LiveServerTestCase):
         edith_list_url = self.browser.current_url
         self.assertRegex(edith_list_url, '/lists/.+')
         self.browser.quit()
+        ## 第二个用户开始输入待办事项
         self.browser = webdriver.Chrome()
         self.browser.get(self.live_server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
