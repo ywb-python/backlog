@@ -75,7 +75,6 @@ class ListViewTest(TestCase):
     """
     视图函数view_list的单元测试
     """
-
     def test_uses_list_template(self):
         """
         测试网站根路径("/lists/{list_.id}/")能否被正确解析，映射到对应的视图函数上
