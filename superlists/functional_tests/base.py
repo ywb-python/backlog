@@ -57,3 +57,9 @@ class FunctionalTest(StaticLiveServerTestCase):
                     raise e
                 time.sleep(0.5)
 
+    def send_keys_to_item_input_box(self, send_text):
+        """
+        向输入框输入文字
+        """
+        self.browser.find_element_by_id('id_new_item').send_keys(send_text)
+
