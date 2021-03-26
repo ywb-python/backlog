@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2021/3/1 23:05
+# @Author  : ywb
+# @Site    : 视图函数的功能测试
+# @File    : test_views.py
+# @Software: PyCharm
+
+
 from django.test import TestCase
 from lists.models import Item, List
 
