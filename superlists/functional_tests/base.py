@@ -35,6 +35,11 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.browser.quit()
 
     def wait_for(self, fn):
+        """
+        等待页面出现某个事件
+        :param fn: 期望事件
+        :return: 返回事件的内容
+        """
         start_time = time.time()
         while True:
             try:
@@ -45,6 +50,10 @@ class FunctionalTest(StaticLiveServerTestCase):
                 time.sleep(0.5)
 
     def wait_for_row_in_list_table(self, row_text):
+        """
+        循环等待检测页面是否出现待检测文本
+        :param row_text: 待检测文本
+        """
         start_time = time.time()
         while True:
             try:
