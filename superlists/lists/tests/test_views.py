@@ -65,39 +65,6 @@ class NewListTest(TestCase):
         self.assertEqual(List.objects.count(), 0)
 
 
-class NewItemTest(TestCase):
-    """
-    视图函数add_item的单元测试
-    """
-
-    def test_can_save_a_POST_request_to_an_existing_list(self):
-        """
-        测试新生成的待办事项有没有加入到现有的清单中
-        """
-        other_list = List.objects.create()
-        correct_list = List.objects.create()
-        self.client.post(
-            f'/lists/{correct_list.id}/add_item',
-        data={"item_text": "A new item for an existing list"}
-        )
-        self.assertEqual(Item.objects.count(), 1)
-        new_item = Item.objects.first()
-        self.assertEqual(new_item.text, "A new item for an existing list")
-        self.assertEqual(new_item.list, correct_list)
-
-    def test_redirects_to_list_view(self):
-        """
-        测试新提交待办事项后重定向的正确性
-        """
-        other_list = List.objects.create()
-        correct_list = List.objects.create()
-        response = self.client.post(
-            f'/lists/{correct_list.id}/add_item',
-        data={"item_text": "A new item for an existing list"}
-        )
-        self.assertRedirects(response, f'/lists/{correct_list.id}/')
-
-
 class ListViewTest(TestCase):
     """
     视图函数view_list的单元测试
@@ -135,5 +102,32 @@ class ListViewTest(TestCase):
         self.assertContains(response, 'itemey 2')
         self.assertNotContains(response, 'other list item 1')
         self.assertNotContains(response, 'other list item 2')
+
+    def test_can_save_a_POST_request_to_an_existing_list(self):
+        """
+        测试新生成的待办事项有没有加入到现有的清单中
+        """
+        other_list = List.objects.create()
+        correct_list = List.objects.create()
+        self.client.post(
+            f'/lists/{correct_list.id}/',
+        data={"item_text": "A new item for an existing list"}
+        )
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, "A new item for an existing list")
+        self.assertEqual(new_item.list, correct_list)
+
+    def test_POST_redirects_to_list_view(self):
+        """
+        测试新提交待办事项后重定向的正确性
+        """
+        other_list = List.objects.create()
+        correct_list = List.objects.create()
+        response = self.client.post(
+            f'/lists/{correct_list.id}/',
+        data={"item_text": "A new item for an existing list"}
+        )
+        self.assertRedirects(response, f'/lists/{correct_list.id}/')
 
 # Create your tests here.
