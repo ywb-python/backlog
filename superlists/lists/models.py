@@ -5,6 +5,10 @@ from django.urls import reverse
 class List(models.Model):
 
     def get_absolute_url(self):
+        """
+        获取显示单个模型对象的页面url
+        """
+        # reverse:反向解析url
         return reverse('view_list', args=[self.id])
 
 
