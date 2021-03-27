@@ -16,6 +16,7 @@ class HomePageTest(TestCase):
     """
     视图函数home_page的单元测试
     """
+
     def test_uses_home_template(self):
         """
         测试网站根路径("/")能否被正确解析，映射到对应的视图函数上
@@ -111,7 +112,7 @@ class ListViewTest(TestCase):
         correct_list = List.objects.create()
         self.client.post(
             f'/lists/{correct_list.id}/',
-        data={"item_text": "A new item for an existing list"}
+            data={"item_text": "A new item for an existing list"}
         )
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
@@ -126,8 +127,19 @@ class ListViewTest(TestCase):
         correct_list = List.objects.create()
         response = self.client.post(
             f'/lists/{correct_list.id}/',
-        data={"item_text": "A new item for an existing list"}
+            data={"item_text": "A new item for an existing list"}
         )
         self.assertRedirects(response, f'/lists/{correct_list.id}/')
+
+    def test_validation_errors_end_up_on_lists_page(self):
+        """
+        测试清单页的错误消息显示
+        """
+        list_ = List.objects.create()
+        response = self.client.post(f'/lists/{list_.id}/', data = {'item_text': ''})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'list.html')
+        expected_error = escape("You can't have an empty list item")
+        self.assertContains(response, expected_error)
 
 # Create your tests here.
