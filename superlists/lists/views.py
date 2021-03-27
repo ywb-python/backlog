@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from lists.models import Item, List
 from django.core.exceptions import ValidationError
 from django.utils.html import escape
+from lists.forms import EMPTY_ITEM_ERROR
 
 
 def home_page(request):
@@ -22,7 +23,7 @@ def new_list(request):
         item.save()
     except ValidationError:
         list_.delete()
-        error = escape("You can't have an empty list item")
+        error = escape(EMPTY_ITEM_ERROR)
         return render(request, 'home.html', {"error": error})
     return redirect(list_)
 
@@ -42,7 +43,7 @@ def view_list(request, list_id):
             item.save()
             return redirect(list_)
         except ValidationError:
-            error = escape("You can't have an empty list item")
+            error = escape(EMPTY_ITEM_ERROR)
     return render(request, 'list.html', {'list': list_, "error": error})
 
 # Create your views here.

@@ -9,6 +9,7 @@
 
 from selenium.webdriver.common.keys import Keys
 from .base import FunctionalTest
+from lists.forms import EMPTY_ITEM_ERROR
 
 
 class ItemValidationTest(FunctionalTest):
@@ -17,13 +18,13 @@ class ItemValidationTest(FunctionalTest):
         self.browser.get(self.server_url)
         self.send_keys_to_item_input_box(Keys.ENTER)
         self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_css_selector('.has-error').text,
-                                               "You can't have an empty list item"))
+                                               EMPTY_ITEM_ERROR))
         self.send_keys_to_item_input_box('Buy milk')
         self.send_keys_to_item_input_box(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Buy milk')
         self.send_keys_to_item_input_box(Keys.ENTER)
         self.wait_for(lambda: self.assertEqual(self.browser.find_element_by_css_selector('.has-error').text,
-                                               "You can't have an empty list item"))
+                                               EMPTY_ITEM_ERROR))
         self.send_keys_to_item_input_box('Make tea')
         self.send_keys_to_item_input_box(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Buy milk')

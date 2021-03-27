@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/3/1 23:05
 # @Author  : ywb
-# @Site    : 视图函数的功能测试
+# @Site    : 视图函数的测试
 # @File    : test_views.py
 # @Software: PyCharm
 
@@ -10,6 +10,7 @@
 from django.test import TestCase
 from lists.models import Item, List
 from django.utils.html import escape
+from lists.forms import EMPTY_ITEM_ERROR
 
 
 class HomePageTest(TestCase):
@@ -54,7 +55,7 @@ class NewListTest(TestCase):
         response = self.client.post('/lists/new', data={'item_text': ''})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'home.html')
-        expected_error = escape("You can't have an empty list item")
+        expected_error = escape(EMPTY_ITEM_ERROR)
         self.assertContains(response, expected_error)
 
     def test_validtaion_list_items_arent_saved(self):
@@ -139,7 +140,7 @@ class ListViewTest(TestCase):
         response = self.client.post(f'/lists/{list_.id}/', data = {'item_text': ''})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'list.html')
-        expected_error = escape("You can't have an empty list item")
+        expected_error = escape(EMPTY_ITEM_ERROR)
         self.assertContains(response, expected_error)
 
 # Create your tests here.

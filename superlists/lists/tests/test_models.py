@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/3/1 23:05
 # @Author  : ywb
-# @Site    : 模型的功能测试
+# @Site    : 模型的测试
 # @File    : test_models.py
 # @Software: PyCharm
 
