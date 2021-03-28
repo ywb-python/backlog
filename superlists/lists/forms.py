@@ -30,3 +30,11 @@ class ItemForm(forms.models.ModelForm):
             'text': {'required': EMPTY_ITEM_ERROR}
         }
 
+    def save(self, for_list):
+        """
+        待办事项的保存
+        :param for_list: 待办事项隶属的清单
+        """
+        # instance:instance属性是将要修改或者创建的数据库对象
+        self.instance.list = for_list
+        return super().save()
