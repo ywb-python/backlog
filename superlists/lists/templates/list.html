@@ -7,7 +7,7 @@
 <!-- 正向查询：子表查询主表-->
 <!--反向查询：主表查询子表-->
 {% for item in list.item_set.all %}
-<tr><td>{{forloop.counter }}: {{ item.text }}</td></tr>
+<tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
 {% endfor %}
 </table>
 {% endblock%}

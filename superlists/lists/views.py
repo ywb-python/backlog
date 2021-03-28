@@ -2,30 +2,28 @@ from django.shortcuts import redirect, render
 from lists.models import Item, List
 from django.core.exceptions import ValidationError
 from django.utils.html import escape
-from lists.forms import EMPTY_ITEM_ERROR
+from lists.forms import EMPTY_ITEM_ERROR, ItemForm
 
 
 def home_page(request):
     """
     对应'/'的视图函数,渲染首页
     """
-    return render(request, 'home.html')
+    return render(request, 'home.html', {'form': ItemForm()})
 
 
 def new_list(request):
     """
     用于新的用户新提交待办事项之后的页面重定向
     """
-    list_ = List.objects.create()
-    item = Item.objects.create(text=request.POST['item_text'], list=list_)
-    try:
-        item.full_clean()
-        item.save()
-    except ValidationError:
-        list_.delete()
-        error = escape(EMPTY_ITEM_ERROR)
-        return render(request, 'home.html', {"error": error})
-    return redirect(list_)
+    form = ItemForm(data=request.POST)
+    # form.is_valid():判断表单提交是否成功
+    if form.is_valid():
+        list_ = List.objects.create()
+        Item.objects.create(text=request.POST['text'], list=list_)
+        return redirect(list_)
+    else:
+        return render(request, 'home.html', {"form": form})
 
 
 def view_list(request, list_id):
@@ -35,15 +33,12 @@ def view_list(request, list_id):
     :param list_id: 待办事项列表id
     """
     list_ = List.objects.get(id=list_id)
-    error = None
+    form = ItemForm()
     if request.method == 'POST':
-        try:
-            item = Item(text=request.POST['item_text'], list=list_)
-            item.full_clean()
-            item.save()
+        form = ItemForm(data=request.POST)
+        if form.is_valid():
+            Item.objects.create(text=request.POST['text'], list=list_)
             return redirect(list_)
-        except ValidationError:
-            error = escape(EMPTY_ITEM_ERROR)
-    return render(request, 'list.html', {'list': list_, "error": error})
+    return render(request, 'list.html', {'list': list_, "form": form})
 
 # Create your views here.
