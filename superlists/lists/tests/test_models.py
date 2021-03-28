@@ -12,34 +12,26 @@ from django.core.exceptions import ValidationError
 from lists.models import Item, List
 
 
-class ListAndItemModelsTest(TestCase):
+class ItemModelsTest(TestCase):
     """
-    模型List和Item的单元测试
+    模型Item的单元测试
     """
-    def test_saving_and_retrieving_items(self):
+    def test_default_text(self):
         """
-        测试新建List对象名下的待办事项能否被正确保存并显示
+        测试待办事项text字段的默认显示
         """
-        list_ = List()
-        list_.save()
-        first_item = Item()
-        first_item.text = 'The first (ever) list item'
-        first_item.list = list_
-        first_item.save()
-        second_item = Item()
-        second_item.text = 'Item the second'
-        second_item.list = list_
-        second_item.save()
-        saved_list = List.objects.first()
-        self.assertEqual(saved_list, list_)
-        saved_items = Item.objects.all()
-        self.assertEqual(saved_items.count(), 2)
-        first_saved_item = saved_items[0]
-        second_saved_item = saved_items[1]
-        self.assertEqual(first_saved_item.text, 'The first (ever) list item')
-        self.assertEqual(first_saved_item.list, list_)
-        self.assertEqual(second_saved_item.text, 'Item the second')
-        self.assertEqual(second_saved_item.list, list_)
+        item = Item()
+        self.assertEqual(item.text, '')
+
+    def test_item_is_related_to_list(self):
+        """
+        测试新建List对象名下的待办事项能否被正确保存
+        """
+        list_ = List.objects.create()
+        item = Item()
+        item.list = list_
+        item.save()
+        self.assertIn(item, list_.item_set.all())
 
     def test_cannot_save_empty_list_items(self):
         """
@@ -51,6 +43,51 @@ class ListAndItemModelsTest(TestCase):
             item.save()
             item.full_clean()
 
+    def test_duplicate_items_are_invalid(self):
+        """
+        测试禁止向同一清单中提交重复的待办事项
+        """
+        list_ = List.objects.create()
+        Item.objects.create(list=list_, text='bla')
+        with self.assertRaises(ValidationError):
+            item = Item(list=list_, text='bla')
+            item.full_clean()
+
+    def test_CAN_save_same_item_to_different_lists(self):
+        """
+        测试允许向不同清单中提交重复的待办事项
+        """
+        list1 = List.objects.create()
+        list2 = List.objects.create()
+        Item.objects.create(list=list1, text='bla')
+        item = Item(list=list2, text='bla')
+        item.full_clean()
+
+    def test_list_ordering(self):
+        """
+        测试多个待办事项的排序
+        """
+        list1 = List.objects.create()
+        item1 = Item.objects.create(list=list1, text='i1')
+        item2 = Item.objects.create(list=list1, text='i2')
+        item3 = Item.objects.create(list=list1, text='i3')
+        self.assertEqual(list(Item.objects.all()), [item1, item2, item3])
+
+    def test_string_representation(self):
+        """
+        测试待办事项的字符串的表示形式
+        """
+        item = Item(text='some text')
+        self.assertEqual(str(item), 'some text')
+
+
+class ListModelsTest(TestCase):
+    """
+    模型List单元测试
+    """
     def test_get_absolute_url(self):
+        """
+        测试url解析
+        """
         list_ = List.objects.create()
         self.assertEqual(list_.get_absolute_url(), f'/lists/{list_.id}/')
