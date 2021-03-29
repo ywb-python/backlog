@@ -11,6 +11,7 @@ from django.test import TestCase
 from lists.models import Item, List
 from django.utils.html import escape
 from lists.forms import EMPTY_ITEM_ERROR, ItemForm
+from unittest import skip
 
 
 class HomePageTest(TestCase):
@@ -190,6 +191,19 @@ class ListViewTest(TestCase):
         expected_error = escape(EMPTY_ITEM_ERROR)
         self.assertContains(response, expected_error)
 
+    @skip
+    def test_duplicate_item_invalidation_erors_end_up_lists_page(self):
+        """
+        测试待办事项重复提交时清单页错误消息的显示
+        """
+        list1 = List.objects.create()
+        item1 = Item.objects.create(list=list1, text='textey')
+        response = self.client.post(f'/lists/{list1.id}/', data={'text':'textey'})
+        expected_error = escape("You're already got this in your list")
+        self.assertContains(response, expected_error)
+        self.assertTemplateUsed(response, 'list.html')
+        self.assertEqual(Item.objects.all().count(), 1)
+
     def test_displays_item_form(self):
         """
         测试待办事项清单页的显示
@@ -198,4 +212,5 @@ class ListViewTest(TestCase):
         response = self.client.get(f'/lists/{list_.id}/')
         self.assertIsInstance(response.context['form'], ItemForm)
         self.assertContains(response, 'name="text"')
+
 # Create your tests here.
