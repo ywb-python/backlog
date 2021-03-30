@@ -9,7 +9,7 @@
 
 from selenium.webdriver.common.keys import Keys
 from .base import FunctionalTest
-from lists.forms import EMPTY_ITEM_ERROR
+from lists.forms import EMPTY_ITEM_ERROR, DUPLICATE_ITEM_ERROR
 
 
 class ItemValidationTest(FunctionalTest):
@@ -47,4 +47,4 @@ class ItemValidationTest(FunctionalTest):
         self.get_item_input_box().send_keys('Buy wellies')
         self.get_item_input_box().send_keys(Keys.ENTER)
         self.wait_for(lambda: self.assertEqual(
-            self.browser.find_element_by_css_selector('.has-error').text, "You're already got this in your list"))
+            self.browser.find_element_by_css_selector('.has-error').text, DUPLICATE_ITEM_ERROR))

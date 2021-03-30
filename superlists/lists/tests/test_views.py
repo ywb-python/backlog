@@ -10,7 +10,7 @@
 from django.test import TestCase
 from lists.models import Item, List
 from django.utils.html import escape
-from lists.forms import EMPTY_ITEM_ERROR, ItemForm
+from lists.forms import DUPLICATE_ITEM_ERROR, EMPTY_ITEM_ERROR, ExistingListItemForm, ItemForm
 from unittest import skip
 
 
@@ -70,8 +70,8 @@ class NewListTest(TestCase):
         测试提交空待办事项时错误消息是否显示在首页中
         """
         response = self.client.post('/lists/new', data={'text': ''})
-        expected_error = escape(EMPTY_ITEM_ERROR)
-        self.assertContains(response, expected_error)
+        self.assertContains(response, escape(EMPTY_ITEM_ERROR))
+
 
     def test_for_invalid_input_passes_for_to_template(self):
         """
@@ -85,8 +85,9 @@ class NewListTest(TestCase):
         测试空待办事项不会被保存
         """
         self.client.post('/lists/new', data={'text': ''})
-        self.assertEqual(Item.objects.count(), 0)
         self.assertEqual(List.objects.count(), 0)
+        self.assertEqual(Item.objects.count(), 0)
+
 
 
 class ListViewTest(TestCase):
@@ -99,7 +100,9 @@ class ListViewTest(TestCase):
         测试网站根路径("/lists/{list_.id}/")能否被正确解析，映射到对应的视图函数上
         """
         list_ = List.objects.create()
+        # 使用Django测试客户端
         response = self.client.get(f'/lists/{list_.id}/')
+        # 检查使用的模板
         self.assertTemplateUsed(response, 'list.html')
 
     def test_passes_correct_list_to_template(self):
@@ -108,8 +111,21 @@ class ListViewTest(TestCase):
         """
         other_list = List.objects.create()
         correct_list = List.objects.create()
-        response = self.client.get('/lists/%d/' % (correct_list.id,))
+        response = self.client.get(f'/lists/{correct_list.id}/')
+        # 检查查询结果集里面都是正确的待办事项
         self.assertEqual(response.context['list'], correct_list)
+
+
+    def test_displays_item_form(self):
+        """
+        测试待办事项清单页的显示
+        """
+        list_ = List.objects.create()
+        response = self.client.get(f'/lists/{list_.id}/')
+        # 检查表单使用正确的类
+        self.assertIsInstance(response.context['form'], ExistingListItemForm)
+        self.assertContains(response, 'name="text"')
+
 
     def test_displays_only_items_for_that_list(self):
         """
@@ -122,6 +138,7 @@ class ListViewTest(TestCase):
         Item.objects.create(text='other list item 1', list=other_list)
         Item.objects.create(text='other list item 2', list=other_list)
         response = self.client.get(f'/lists/{correct_list.id}/')
+        # 检查测试模板的逻辑
         self.assertContains(response, 'itemey 1')
         self.assertContains(response, 'itemey 2')
         self.assertNotContains(response, 'other list item 1')
@@ -139,6 +156,7 @@ class ListViewTest(TestCase):
         )
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
+        # post的测试
         self.assertEqual(new_item.text, "A new item for an existing list")
         self.assertEqual(new_item.list, correct_list)
 
@@ -159,7 +177,10 @@ class ListViewTest(TestCase):
         输入的待办事项为空时进行post提交
         """
         list_ = List.objects.create()
-        return self.client.post(f'/lists/{list_.id}/', data = {'text': ''})
+        return self.client.post(
+            f'/lists/{list_.id}/',
+            data={'text': ''}
+        )
 
     def test_for_invalid_input_nothing_saved_to_db(self):
         """
@@ -181,36 +202,30 @@ class ListViewTest(TestCase):
         测试提交空待办事项时表单对象是否有传入清单列表页页模板
         """
         response = self.post_invalid_input()
-        self.assertIsInstance(response.context['form'], ItemForm)
+        self.assertIsInstance(response.context['form'], ExistingListItemForm)
 
-    def test_for_invalid_input_shows_on_page(self):
+    def test_for_invalid_input_shows_error_on_page(self):
         """
         测试清单页的错误消息显示
         """
         response = self.post_invalid_input()
-        expected_error = escape(EMPTY_ITEM_ERROR)
-        self.assertContains(response, expected_error)
+        # 检查是否渲染指定的表单， 而且显示错误消息
+        self.assertContains(response, escape(EMPTY_ITEM_ERROR))
 
-    @skip
-    def test_duplicate_item_invalidation_erors_end_up_lists_page(self):
+
+    def test_duplicate_item_validation_errors_end_up_on_lists_page(self):
         """
         测试待办事项重复提交时清单页错误消息的显示
         """
         list1 = List.objects.create()
         item1 = Item.objects.create(list=list1, text='textey')
-        response = self.client.post(f'/lists/{list1.id}/', data={'text':'textey'})
-        expected_error = escape("You're already got this in your list")
+        response = self.client.post(
+            f'/lists/{list1.id}/',
+            data={'text': 'textey'}
+        )
+        expected_error = escape(DUPLICATE_ITEM_ERROR)
         self.assertContains(response, expected_error)
         self.assertTemplateUsed(response, 'list.html')
         self.assertEqual(Item.objects.all().count(), 1)
-
-    def test_displays_item_form(self):
-        """
-        测试待办事项清单页的显示
-        """
-        list_ = List.objects.create()
-        response = self.client.get(f'/lists/{list_.id}/')
-        self.assertIsInstance(response.context['form'], ItemForm)
-        self.assertContains(response, 'name="text"')
 
 # Create your tests here.

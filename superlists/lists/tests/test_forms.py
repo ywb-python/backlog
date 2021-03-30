@@ -31,8 +31,8 @@ class ItemFormTest(TestCase):
         form = ItemForm(data={'text': ''})
         # form.is_valid():检查验证是否通过
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['text'],
-                         [EMPTY_ITEM_ERROR])
+        self.assertEqual(form.errors['text'], [EMPTY_ITEM_ERROR])
+
 
     def test_form_save_handles_saving_to_a_list(self):
         """
@@ -77,3 +77,12 @@ class ExistingListItemFormTest(TestCase):
         form = ExistingListItemForm(for_list=list_, data={'text': 'no twins!'})
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['text'], [DUPLICATE_ITEM_ERROR])
+
+    def test_form_save(self):
+        """
+        测试form表单的保存
+        """
+        list_ = List.objects.create()
+        form = ExistingListItemForm(for_list=list_, data={'text':'hi'})
+        new_item = form.save()
+        self.assertEqual(new_item, Item.objects.all()[0])
