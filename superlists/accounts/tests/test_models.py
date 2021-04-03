@@ -10,6 +10,8 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from accounts.models import Token
+from django.contrib import auth
+
 
 User = get_user_model()
 
@@ -33,6 +35,15 @@ class UserModelTest(TestCase):
         """
         user = User(email='18721706546@163.com')
         self.assertEqual(user.pk, '18721706546@163.com')
+
+    def test_no_problem_with_auth_login(self):
+        """
+        测试认证登录有没有问题
+        """
+        user = User.objects.create(email='18721706546@163.com')
+        user.backend = ''
+        request = self.client.request().wsgi_request
+        auth.login(request, user)
 
 
 class TokenModelTest(TestCase):
