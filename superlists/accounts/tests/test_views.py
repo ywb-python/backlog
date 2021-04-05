@@ -73,9 +73,9 @@ class SendLoginEmailViewTest(TestCase):
         self.client.post('/accounts/send_login_email',
                          data={'email': '18721706546@163.com'})
         token = Token.objects.first()
-        excepted_url = f'http://testserver/accounts/login?token={token.uid}'
+        expected_url = f'http://testserver/accounts/login?token={token.uid}'
         (subject, body, from_email, to_list), kwargs = mock_send_email.call_args
-        self.assertIn(excepted_url, body)
+        self.assertIn(expected_url, body)
 
 
 @patch('accounts.views.auth')

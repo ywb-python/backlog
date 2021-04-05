@@ -112,3 +112,12 @@ class ListModelTest(TestCase):
         测试属主是一个可有可无的属性
         """
         List.objects.create()
+
+    def test_list_name_is_first_item_text(self):
+        """
+        测试清单是否根据其中第一个待办事项命名
+        """
+        list_ = List.objects.create()
+        Item.objects.create(list=list_, text='first item')
+        Item.objects.create(list=list_, text='second item')
+        self.assertEqual(list_.name, 'first item')
