@@ -10,6 +10,10 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from lists.models import Item, List
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 class ItemModelsTest(TestCase):
@@ -94,3 +98,17 @@ class ListModelTest(TestCase):
         """
         list_ = List.objects.create()
         self.assertEqual(list_.get_absolute_url(), f'/lists/{list_.id}/')
+
+    def test_lists_can_have_owners(self):
+        """
+        测试待办事项可以拥有属主
+        """
+        user = User.objects.create(email='a@b.com')
+        list_ = List.objects.create(owner=user)
+        self.assertIn(list_, user.list_set.all())
+
+    def test_list_owner_is_optional(self):
+        """
+        测试属主是一个可有可无的属性
+        """
+        List.objects.create()

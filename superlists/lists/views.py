@@ -23,8 +23,9 @@ def new_list(request):
     form = ItemForm(data=request.POST)
     # form.is_valid():判断表单提交是否成功
     if form.is_valid():
-        list_ = List.objects.create()
-        list_.owner = request.user
+        list_ = List()
+        if request.user.is_authenticated:
+            list_.owner = request.user
         list_.save()
         form.save(for_list=list_)
         return redirect(list_)
