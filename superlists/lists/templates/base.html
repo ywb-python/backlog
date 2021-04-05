@@ -16,6 +16,13 @@
                     Superlists
                 </a>
                 {% if user.email %}
+                <ul class="nav navbar-nav navbar-left">
+                    <Li>
+                        <a href="#">
+                            My lists
+                        </a>
+                    </Li>
+                </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="navbar-text">
                        Logged in as {{ user.email }}

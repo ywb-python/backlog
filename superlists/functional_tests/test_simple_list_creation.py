@@ -26,22 +26,15 @@ class NewVisitorTest(FunctionalTest):
             self.get_item_input_box().get_attribute('placeholder'),
             'Enter a to-do item'
         )
-        self.get_item_input_box().send_keys('Buy peacock feathers')
-        self.get_item_input_box().send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table('1: Buy peacock feathers')
-        self.get_item_input_box().send_keys('Use peacock feathers to make a fly')
-        self.get_item_input_box().send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table('2: Use peacock feathers to make a fly')
-        self.wait_for_row_in_list_table('1: Buy peacock feathers')
+        self.add_list_item('Buy peacock feathers')
+        self.add_list_item('Use peacock feathers to make a fly')
 
     def test_multiple_users_can_start_lists_at_different_urls(self):
         """
         测试多用户提交的待办事项是独立分开的，是否有自己唯一的url,不能看到别人提交的内容
         """
         self.browser.get(self.live_server_url)
-        self.get_item_input_box().send_keys('Buy peacock feathers')
-        self.get_item_input_box().send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table('1: Buy peacock feathers')
+        self.add_list_item('Buy peacock feathers')
         edith_list_url = self.browser.current_url
         self.assertRegex(edith_list_url, '/lists/.+')
         self.browser.quit()
@@ -50,9 +43,7 @@ class NewVisitorTest(FunctionalTest):
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy peacock feathers', page_text)
         self.assertNotIn('make a fly', page_text)
-        self.get_item_input_box().send_keys('Buy milk')
-        self.get_item_input_box().send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table('1: Buy milk')
+        self.add_list_item('Buy milk')
         francis_list_url = self.browser.current_url
         # assertRegex():用于检查字符串是否匹配正则表达式
         self.assertRegex(francis_list_url, '/lists/.+')

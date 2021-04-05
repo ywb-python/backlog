@@ -48,9 +48,7 @@ class ItemValidationTest(FunctionalTest):
         测试不能提交重复的待办事项
         """
         self.browser.get(self.live_server_url)
-        self.get_item_input_box().send_keys('Buy wellies')
-        self.get_item_input_box().send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table('1: Buy wellies')
+        self.add_list_item('Buy wellies')
         self.get_item_input_box().send_keys('Buy wellies')
         self.get_item_input_box().send_keys(Keys.ENTER)
         self.wait_for(lambda: self.assertEqual(
@@ -61,9 +59,7 @@ class ItemValidationTest(FunctionalTest):
         测试在用户开始修正问题时输入框的错误消息被清除
         """
         self.browser.get(self.live_server_url)
-        self.get_item_input_box().send_keys('Banter too thick')
-        self.get_item_input_box().send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table('1: Banter too thick')
+        self.add_list_item('Banter too thick')
         self.get_item_input_box().send_keys('Banter too thick')
         self.get_item_input_box().send_keys(Keys.ENTER)
         self.wait_for(lambda: self.assertTrue(
