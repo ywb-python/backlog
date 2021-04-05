@@ -41,4 +41,13 @@ def view_list(request, list_id):
             return redirect(list_)
     return render(request, 'list.html', {'list': list_, "form": form})
 
+
+def my_lists(request, email):
+    """
+    my_lists对应的视图函数，用户展示当前用户的待办事项清单
+    :param request:
+    :param email: 当前用户邮箱
+    """
+
+    return render(request, 'my_lists.html')
 # Create your views here.
