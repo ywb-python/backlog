@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY, get_user_model
 from django.contrib.sessions.backends.db import SessionStore
 from .base import FunctionalTest
+from .management.commands.create_session import create_pre_authenticated_sessions
 
 
 User = get_user_model()
@@ -25,6 +26,8 @@ class MyListsTest(FunctionalTest):
         产生认证后的session信息
         :param email: 用户邮箱
         """
+        if self.staging_server:
+            session_key = c
         user = User.objects.create(email=email)
         session = SessionStore()
         session[SESSION_KEY] = user.pk
