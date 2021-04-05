@@ -3,6 +3,10 @@ from lists.models import Item, List
 from django.core.exceptions import ValidationError
 from django.utils.html import escape
 from lists.forms import EMPTY_ITEM_ERROR, ExistingListItemForm, ItemForm
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 def home_page(request):
@@ -20,6 +24,8 @@ def new_list(request):
     # form.is_valid():判断表单提交是否成功
     if form.is_valid():
         list_ = List.objects.create()
+        list_.owner = request.user
+        list_.save()
         form.save(for_list=list_)
         return redirect(list_)
     else:
@@ -48,6 +54,6 @@ def my_lists(request, email):
     :param request:
     :param email: 当前用户邮箱
     """
-
-    return render(request, 'my_lists.html')
+    owner = User.objects.get(email=email)
+    return render(request, 'my_lists.html', {'owner': owner})
 # Create your views here.

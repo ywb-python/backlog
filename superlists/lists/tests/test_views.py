@@ -12,6 +12,10 @@ from lists.models import Item, List
 from django.utils.html import escape
 from lists.forms import DUPLICATE_ITEM_ERROR, EMPTY_ITEM_ERROR, ExistingListItemForm, ItemForm
 from unittest import skip
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 class HomePageTest(TestCase):
@@ -87,7 +91,6 @@ class NewListTest(TestCase):
         self.client.post('/lists/new', data={'text': ''})
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(Item.objects.count(), 0)
-
 
 
 class ListViewTest(TestCase):
@@ -212,7 +215,6 @@ class ListViewTest(TestCase):
         # 检查是否渲染指定的表单， 而且显示错误消息
         self.assertContains(response, escape(EMPTY_ITEM_ERROR))
 
-
     def test_duplicate_item_validation_errors_end_up_on_lists_page(self):
         """
         测试待办事项重复提交时清单页错误消息的显示
@@ -238,7 +240,27 @@ class MyListsTest(TestCase):
         """
         测试url:my_lists能否渲染my_lists模板
         """
-        response = self.client.get('/lists/users/18721706546@163.com/')
+        User.objects.create(email='a@b.com')
+        response = self.client.get('/lists/users/a@b.com/')
         self.assertTemplateUsed(response, 'my_lists.html')
+
+    def test_passes_correct_owner_to_template(self):
+        """
+        测试为每个用户展示自己对应的待办事项清单
+        """
+        User.objects.create(email='wrong@owner.com')
+        correct_user = User.objects.create(email='a@b.com')
+        response = self.client.get('/lists/users/a@b.com/')
+        self.assertEqual(response.context['owner'], correct_user)
+
+    def test_list_owner_is_saved_if_user_is_authenticated(self):
+        """
+        测试已登录用户能否将新建的清单指派到自己名下
+        """
+        user = User.objects.create(email='a@b.com')
+        self.client.force_login(user)
+        self.client.post('/lists/new', data={'text': 'new item'})
+        list_ = List.objects.first()
+        self.assertEqual(list_.owner, user)
 
 # Create your tests here.
