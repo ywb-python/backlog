@@ -15,7 +15,7 @@ def _get_manage_dot_pay(host):
     return f'~/sites/{host}/virtualenv/bin/python ~/site/{host}/source/manage.py'
 
 
-def create_database(host):
+def reset_database(host):
     manage_dot_py = _get_manage_dot_pay(host)
     with settings(host_string=f'elspeth@{host}'):
         run(f'{manage_dot_py} flush --noinput')
