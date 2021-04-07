@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from lists.models import Item, List
 from django.core.exceptions import ValidationError
 from django.utils.html import escape
-from lists.forms import EMPTY_ITEM_ERROR, ExistingListItemForm, ItemForm
+from lists.forms import EMPTY_ITEM_ERROR, ExistingListItemForm, ItemForm, NewListForm
 from django.contrib.auth import get_user_model
 
 
@@ -20,17 +20,11 @@ def new_list(request):
     """
     用于新的用户新提交待办事项之后的页面重定向
     """
-    form = ItemForm(data=request.POST)
-    # form.is_valid():判断表单提交是否成功
+    form = NewListForm(data=request.POST)
     if form.is_valid():
-        list_ = List()
-        if request.user.is_authenticated:
-            list_.owner = request.user
-        list_.save()
-        form.save(for_list=list_)
+        list_ = form.save(owner=request.user)
         return redirect(list_)
-    else:
-        return render(request, 'home.html', {"form": form})
+    return render(request, 'home.html', {"form": form})
 
 
 def view_list(request, list_id):

@@ -13,6 +13,10 @@ from django.utils.html import escape
 from lists.forms import DUPLICATE_ITEM_ERROR, EMPTY_ITEM_ERROR, ExistingListItemForm, ItemForm
 from unittest import skip
 from django.contrib.auth import get_user_model
+from unittest.mock import patch, Mock
+import unittest
+from django.http import HttpRequest
+from lists.views import new_list
 
 
 User = get_user_model()
@@ -39,7 +43,7 @@ class HomePageTest(TestCase):
         self.assertIsInstance(response.context['form'], ItemForm)
 
 
-class NewListTest(TestCase):
+class NewListViewIntegratedTest(TestCase):
     """
     视图函数new_list的单元测试
     """
@@ -76,7 +80,6 @@ class NewListTest(TestCase):
         response = self.client.post('/lists/new', data={'text': ''})
         self.assertContains(response, escape(EMPTY_ITEM_ERROR))
 
-
     def test_for_invalid_input_passes_for_to_template(self):
         """
         测试提交空待办事项时表单对象是否有传入首页模板
@@ -91,6 +94,16 @@ class NewListTest(TestCase):
         self.client.post('/lists/new', data={'text': ''})
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(Item.objects.count(), 0)
+
+    def test_list_owner_is_saved_if_user_is_authenticated(self):
+        """
+        测试已登录用户能否将新建的清单指派到自己名下
+        """
+        user = User.objects.create(email='a@b.com')
+        self.client.force_login(user)
+        self.client.post('/lists/new', data={'text': 'new item'})
+        list_ = List.objects.first()
+        self.assertEqual(list_.owner, user)
 
 
 class ListViewTest(TestCase):
@@ -253,14 +266,72 @@ class MyListsTest(TestCase):
         response = self.client.get('/lists/users/a@b.com/')
         self.assertEqual(response.context['owner'], correct_user)
 
-    def test_list_owner_is_saved_if_user_is_authenticated(self):
+
+@patch('lists.views.NewListForm')
+class NewListViewUnitTest(unittest.TestCase):
+    """
+    视图函数new_list的单元测测试
+    """
+
+    def setUp(self):
+        self.request = HttpRequest()
+        self.request.POST['text'] = 'new item'
+        self.request.user = Mock()
+
+    def test_passes_POST_data_to_NewListForm(self, mockNewListForm):
         """
-        测试已登录用户能否将新建的清单指派到自己名下
+        测试能否正确读取请求中携带的参数
+        :param mockNewListForm: NewListForm模拟表单
         """
-        user = User.objects.create(email='a@b.com')
-        self.client.force_login(user)
-        self.client.post('/lists/new', data={'text': 'new item'})
-        list_ = List.objects.first()
-        self.assertEqual(list_.owner, user)
+        new_list(self.request)
+        mockNewListForm.assert_called_once_with(data=self.request.POST)
+
+    def test_saves_form_with_owner_if_form_valid(self, mockNewListForm):
+        """
+        测试合理的表单时否可以保存在属主名下
+        :param mockNewListForm:NewListForm模拟表单
+        """
+        mock_form = mockNewListForm()
+        mock_form.is_valid.return_value = True
+        new_list(self.request)
+        mock_form.save.assert_called_once_with(owner=self.request.user)
+
+    @patch('Lists.views.redirect')
+    def test_redirects_to_form_returned_object_if_form_valid(self, mock_redirect, mockNewListForm):
+        """
+        测试表单数据有效情形下的重定向
+        :param mock_redirect: 模拟的redirect函数
+        :param mockNewListForm: NewListForm模拟表单
+        """
+        mock_form = mockNewListForm.return_value
+        mock_form.is_valid.return_value = True
+        response = new_list(self.request)
+        self.assertEqual(response, mock_redirect.return_value)
+        mock_redirect.assert_called_once_with(mock_form.save.return_value)
+
+    @patch('Lists.views.render')
+    def test_renders_home_page_with_form_if_form_valid(self, mock_render, mockNewListForm):
+        """
+        测试表单数据有效情形下的首页渲染
+        :param mock_render: 模拟的render函数
+        :param mockNewListForm: NewListForm模拟表单
+        """
+        mock_form = mockNewListForm.return_value
+        mock_form.is_valid.return_value = True
+        response = new_list(self.request)
+        self.assertEqual(response, mock_render.return_value)
+        mock_render.assert_called_once_with(self.request, 'home.html',
+                                            {'form': mock_form})
+
+    def test_does_not_save_if_form_invalid(self, mockNewListForm):
+        """
+        测试不合理的表单不能被保存
+        :param mockNewListForm: NewListForm模拟表单
+        """
+        mock_form = mockNewListForm.return_value
+        mock_form.is_valid.return_value = False
+        new_list(self.request)
+        self.assertFalse(mock_form.save.called)
+
 
 # Create your tests here.

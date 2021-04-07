@@ -103,12 +103,46 @@ class ListModelTest(TestCase):
         """
         测试待办事项可以拥有属主
         """
-        user = User.objects.create(email='a@b.com')
-        list_ = List.objects.create(owner=user)
-        self.assertIn(list_, user.list_set.all())
+        List(owner=User())
 
     def test_list_owner_is_optional(self):
         """
         测试属主是一个可有可无的属性
         """
-        List.objects.create()
+        List().full_clean()
+
+    def test_create_new_creates_list_and_first_item(self):
+        """
+        测试产生一个新的待办事项和列表清单
+        """
+        List.create_new(first_item='new item text')
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'new item text')
+        new_list = List.objects.first()
+        self.assertEqual(new_item.list, new_list)
+
+    def test_create_new_optionally_saves_owner(self):
+        """
+        测试清单有一个属主选项
+        """
+        user = User.objects.create()
+        List.create_new(first_item_text='new item text', owner=user)
+        new_list = List.objects.first()
+        self.assertEqual(new_list.owner, user)
+
+    def test_create_returns_new_list_objects(self):
+        """
+        测试生成并返回一个新的清单列表对象
+        """
+        returned = List.create_new(first_item_text='new item text')
+        new_list = List.objects.first()
+        self.assertEqual(returned, new_list)
+
+    def test_list_name_is_first_item_text(self):
+        """
+        测试清单列表的名字是不是以第一个待办事项命名的
+        """
+        list_ = List.objects.create()
+        Item.objects.create(list=list_, text='first item')
+        Item.objects.create(list=list_, text='second item')
+        self.assertEqual(list_.name, 'first item')

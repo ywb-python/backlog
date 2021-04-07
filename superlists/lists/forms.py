@@ -8,7 +8,7 @@
 
 
 from django import forms
-from lists.models import Item
+from lists.models import Item, List
 from django.core.exceptions import ValidationError
 
 
@@ -32,14 +32,14 @@ class ItemForm(forms.models.ModelForm):
             'text': {'required': EMPTY_ITEM_ERROR}
         }
 
-    def save(self, for_list):
-        """
-        待办事项的保存
-        :param for_list: 待办事项隶属的清单
-        """
-        # instance:instance属性是将要修改或者创建的数据库对象
-        self.instance.list = for_list
-        return super().save()
+
+class NewListForm(ItemForm):
+
+    def save(self, owner):
+        if owner.is_authenticated:
+            return List.create_new(first_item_text=self.cleaned_data['text'], owner=owner)
+        else:
+            return List.create_new(first_item_text=self.cleaned_data['text'])
 
 
 class ExistingListItemForm(ItemForm):
@@ -55,10 +55,3 @@ class ExistingListItemForm(ItemForm):
         except ValidationError as e:
             e.error_dict = {'text': [DUPLICATE_ITEM_ERROR]}
             self._update_errors(e)
-
-    def save(self):
-        """
-        待办事项的保存
-        """
-        # instance:instance属性是将要修改或者创建的数据库对象
-        return forms.models.ModelForm.save(self)
