@@ -1,7 +1,5 @@
 from django.shortcuts import redirect, render
 from lists.models import Item, List
-from django.core.exceptions import ValidationError
-from django.utils.html import escape
 from lists.forms import EMPTY_ITEM_ERROR, ExistingListItemForm, ItemForm, NewListForm
 from django.contrib.auth import get_user_model
 

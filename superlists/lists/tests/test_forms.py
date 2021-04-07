@@ -41,75 +41,12 @@ class ItemFormTest(TestCase):
         self.assertEqual(form.errors['text'], [EMPTY_ITEM_ERROR])
 
 
-class ExistingListItemFormTest(TestCase):
-    """
-    ExistingListItemForm类的测试
-    """
-
-    def test_form_renders_item_text_input(self):
-        """
-        测试form表单输入框的渲染情形
-        """
-        list_ = List.objects.create()
-        form = ExistingListItemForm(for_list=list_)
-        self.assertIn('placeholder="Enter a to-do item"', form.as_p())
-
-    def test_form_validation_for_blank_items(self):
-        """
-        测试空待办事项提交失败
-        """
-        list_ = List.objects.create()
-        form = ExistingListItemForm(for_list=list_, data={'text': ''})
-        self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['text'], [EMPTY_ITEM_ERROR])
-
-    def test_form_validation_for_duplicate_items(self):
-        """
-        测试重复待办事项提交失败
-        """
-        list_ = List.objects.create()
-        Item.objects.create(list=list_, text='no twins!')
-        form = ExistingListItemForm(for_list=list_, data={'text': 'no twins!'})
-        self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['text'], [DUPLICATE_ITEM_ERROR])
-
-    def test_form_save(self):
-        """
-        测试form表单的保存
-        """
-        list_ = List.objects.create()
-        form = ExistingListItemForm(for_list=list_, data={'text':'hi'})
-        new_item = form.save()
-        self.assertEqual(new_item, Item.objects.all()[0])
 
 
 class NewListFormTest(unittest.TestCase):
     """
     模型NewListForm的测试
     """
-
-    @patch('lists.views.List')
-    @patch('lists.views.Item')
-    def test_save_creates_new_list_and_item_from_post_data(self, mockItem, mockList):
-        """
-        测试每一个新的待办事项都会产生一个新的清单列表
-        :param mockItem: Item模拟模型
-        :param mockList: List模拟模型
-        """
-        mock_item = mockItem.return_value
-        mock_list = mockList.return_value
-        user = Mock()
-        form = NewListForm(data={'text': 'new item text'})
-        form.is_valid()
-
-        def check_item_text_and_list():
-            self.assertEqual(mock_item.text, 'new item text')
-            self.assertEqual(mock_item.list, mock_list)
-            self.assertTrue(mock_list.save.called)
-
-        mock_item.save.side_effect = check_item_text_and_list
-        form.save(owner=user)
-        self.assertTrue(mock_item.save.called)
 
     @patch('lists.forms.List.create_new')
     def test_save_create_new_list_from_post_data_if_user_not_authenticated(self, mock_List_create_new):
@@ -151,8 +88,43 @@ class NewListFormTest(unittest.TestCase):
         response = form.save(owner=user)
         self.assertEqual(response, mock_List_create_new.return_value)
 
-    def test_create_returns_new_list_object(self):
+class ExistingListItemFormTest(TestCase):
+    """
+    ExistingListItemForm类的测试
+    """
+
+    def test_form_renders_item_text_input(self):
         """
-        测试产生返回一个新的清单列表
+        测试form表单输入框的渲染情形
         """
-        self.fail()
+        list_ = List.objects.create()
+        form = ExistingListItemForm(for_list=list_)
+        self.assertIn('placeholder="Enter a to-do item"', form.as_p())
+
+    def test_form_validation_for_blank_items(self):
+        """
+        测试空待办事项提交失败
+        """
+        list_ = List.objects.create()
+        form = ExistingListItemForm(for_list=list_, data={'text': ''})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['text'], [EMPTY_ITEM_ERROR])
+
+    def test_form_validation_for_duplicate_items(self):
+        """
+        测试重复待办事项提交失败
+        """
+        list_ = List.objects.create()
+        Item.objects.create(list=list_, text='no twins!')
+        form = ExistingListItemForm(for_list=list_, data={'text': 'no twins!'})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['text'], [DUPLICATE_ITEM_ERROR])
+
+    def test_form_save(self):
+        """
+        测试form表单的保存
+        """
+        list_ = List.objects.create()
+        form = ExistingListItemForm(for_list=list_, data={'text':'hi'})
+        new_item = form.save()
+        self.assertEqual(new_item, Item.objects.all()[0])
