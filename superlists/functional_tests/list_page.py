@@ -75,3 +75,9 @@ class ListPage(object):
         self.test.wait_for(lambda: self.test.assertIn(
             email, [item.text for item in self.get_shared_with_list()]
         ))
+
+    def get_lists_owner(self):
+        """
+        获取订单列表的属主
+        """
+        return self.test.browser.find_element_by_id('id_list_owner').text
