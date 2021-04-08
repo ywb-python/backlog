@@ -22,11 +22,11 @@ class Command(BaseCommand):
         parser.add_arguments('email')
 
     def handle(self, *args, **options):
-        session_key = create_pre_authenticated_sessions(options['email'])
+        session_key = create_pre_authenticated_session(options['email'])
         self.stdout.write(session_key)
 
 
-def create_pre_authenticated_sessions(email):
+def create_pre_authenticated_session(email):
     user = User.objects.create(email=email)
     session = SessionStore()
     session[SESSION_KEY] = user.pk
