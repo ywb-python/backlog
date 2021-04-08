@@ -9,6 +9,7 @@
 
 from selenium import webdriver
 from .base import FunctionalTest
+from .list_page import ListPage
 
 
 def quit_if_prossible(browser):
@@ -38,8 +39,9 @@ class SharingTest(FunctionalTest):
         self.browser = oni_browser
         self.create_pre_authenticated_session('oniciferous@Eexample.com')
         self.browser = edit_browser
-        self.browser.get(self.live_server_url)
-        shared_box = self.browser.find_element_by_css_selector('input[name="sharee"]')
+        list_page = ListPage(self).add_list_item('Get help')
+        shared_box = list_page.get_share_box()
         self.assertEqual(shared_box.get_attribute('placeholder'), 'your-frined@example.com')
+        list_page.share_list_with('oniciferous@example.com')
 
 
