@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/2/6 20:41
 # @Author  : ywb
-# @Site    : 
+# @Site    : 使用unittest模块组织测试类
 # @File    : functional_tests.py
 # @Software: PyCharm
 
@@ -29,4 +29,5 @@ class NewVisitorTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    # warnings='ignore'：禁止抛出异常
     unittest.main(warnings='ignore')
