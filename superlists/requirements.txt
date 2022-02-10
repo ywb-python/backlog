@@ -2,7 +2,7 @@ bcrypt==3.2.0
 cffi==1.14.5
 cryptography==3.4.6
 decorator==4.4.2
-Django==2.2.1
+Django==2.2.27
 djangorestframework==3.12.2
 Fabric3==1.14.post1
 gunicorn==19.7.1
